@@ -1,36 +1,198 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🗑️ Waste Management System
 
-## Getting Started
+Website Manajemen Pengelolaan Sampah berbasis **Next.js**, **PostgreSQL**, dan **Prisma ORM** yang memungkinkan pengguna melaporkan data sampah berdasarkan jenis, wilayah, berat, dan gambar. Sistem ini juga menyediakan dashboard admin untuk mengelola data dan memantau statistik pengelolaan sampah.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 📖 Overview
+
+Waste Management System adalah aplikasi berbasis web yang bertujuan untuk membantu proses pendataan dan pengelolaan sampah secara digital. Pengguna dapat membuat laporan sampah dengan mengunggah gambar, memilih jenis sampah, menentukan wilayah, serta memasukkan berat sampah. Admin dapat memverifikasi, mengelola, dan melihat statistik laporan melalui dashboard.
+
+---
+
+## ✨ Features
+
+### 👤 User
+
+- Register & Login
+- Dashboard
+- Membuat laporan sampah
+- Upload gambar sampah
+- Memilih jenis sampah
+- Memilih wilayah
+- Mengisi berat sampah
+- Melihat riwayat laporan
+- Edit profil
+
+### 👨‍💼 Admin
+
+- Dashboard Admin
+- Manajemen User
+- CRUD Jenis Sampah
+- CRUD Wilayah
+- Melihat seluruh laporan
+- Mengubah status laporan
+- Statistik laporan
+- Total berat sampah
+- Grafik berdasarkan jenis dan wilayah
+
+---
+
+## 🛠 Tech Stack
+
+| Technology     | Description          |
+| -------------- | -------------------- |
+| Next.js 16     | Fullstack Framework  |
+| React 19       | Frontend Library     |
+| TypeScript     | Programming Language |
+| PostgreSQL     | Database             |
+| Prisma ORM     | Database ORM         |
+| Tailwind CSS   | Styling              |
+| NextAuth / JWT | Authentication       |
+| bcrypt         | Password Hashing     |
+
+---
+
+## 📁 Project Structure
+
+```text
+waste-management/
+│
+├── app/
+│   ├── (auth)/
+│   ├── admin/
+│   ├── dashboard/
+│   ├── reports/
+│   ├── api/
+│   └── page.tsx
+│
+├── components/
+├── lib/
+├── prisma/
+├── public/
+├── middleware.ts
+└── package.json
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🗄 Database Schema
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Tables
 
-## Learn More
+- Users
+- Waste Types
+- Regions
+- Waste Reports
 
-To learn more about Next.js, take a look at the following resources:
+### Relationships
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```text
+Users
+   │
+   ├───────────┐
+   │           │
+Waste Reports
+   │
+   ├────────── Waste Types
+   │
+   └────────── Regions
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📊 Dashboard
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Admin Dashboard
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Total Users
+- Total Reports
+- Total Waste (kg)
+- Total Organic Waste
+- Total Inorganic Waste
+- Total B3 Waste
+- Report Statistics
+- Monthly Chart
+- Region Chart
+
+### User Dashboard
+
+- Total Reports
+- Total Weight
+- Report History
+- Report Status
+
+---
+
+## 🔐 Roles
+
+### Admin
+
+- Full Access
+- CRUD User
+- CRUD Waste Type
+- CRUD Region
+- Manage Reports
+- View Statistics
+
+### User
+
+- Create Report
+- View Personal Reports
+- Edit Profile
+
+---
+
+## 📦 Future Features
+
+- Google Maps Integration
+- GPS Location
+- QR Code
+- Export PDF
+- Export Excel
+- Notification System
+- Email Verification
+- Dark Mode
+- Progressive Web App (PWA)
+
+---
+
+## 📅 Development Roadmap
+
+### Phase 1
+
+- Authentication
+- Database
+- Prisma
+- Layout
+
+### Phase 2
+
+- CRUD Waste Types
+- CRUD Regions
+- CRUD Reports
+
+### Phase 3
+
+- Dashboard
+- Charts
+- Statistics
+
+### Phase 4
+
+- Upload Image
+- Search
+- Filter
+- Pagination
+
+### Phase 5
+
+- Deployment
+- Testing
+- Documentation
+
+---
+
+## 👨‍💻 Author
+
+Developed with using **Next.js** and **PostgreSQL**.

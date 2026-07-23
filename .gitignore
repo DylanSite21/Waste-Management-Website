@@ -40,7 +40,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# markdown files
 AGENTS.md
 CLAUDE.md
+.md*
 
-*.md
+# prisma
+/app/generated/prisma
+/.agents/
+/.claude/
+/.windsurf/
