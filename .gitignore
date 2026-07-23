@@ -43,7 +43,7 @@ next-env.d.ts
 # markdown files
 AGENTS.md
 CLAUDE.md
-.md*
+*.md
 
 # prisma
 /app/generated/prisma
