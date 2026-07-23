@@ -11,3 +11,62 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+
+  reports   WasteReport[]
+
+  createdAt DateTime @default(now())
+}
+
+model WasteType {
+  id      Int    @id @default(autoincrement())
+  name    String
+
+  reports WasteReport[]
+}
+
+model Region {
+  id       Int    @id @default(autoincrement())
+  province String
+  city     String
+  district String?
+
+  reports  WasteReport[]
+}
+
+model WasteReport {
+  id           String    @id @default(uuid())
+
+  userId       String
+  wasteTypeId  Int
+  regionId     Int
+
+  image        String
+  weight       Decimal   @db.Decimal(10,2)
+  description  String?
+
+  status       Status    @default(PENDING)
+
+  createdAt    DateTime  @default(now())
+
+  user         User       @relation(fields: [userId], references: [id])
+  wasteType    WasteType  @relation(fields: [wasteTypeId], references: [id])
+  region        Region     @relation(fields: [regionId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum Status {
+  PENDING
+  PROCESSED
+  COMPLETED
+}
