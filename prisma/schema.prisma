@@ -16,15 +16,59 @@ model User {
   id        String   @id @default(uuid())
   name      String
   email     String   @unique
+  noHp      String   @unique
   password  String
   role      Role     @default(USER)
 
   reports   WasteReport[]
 
+  // Authentication
   accounts  Account[]
   sessions  Session[]
 
   createdAt DateTime @default(now())
+}
+
+model WasteType {
+  id        String @id @default(uuid())
+  name      String @unique
+
+  reports   WasteReport[]
+}
+
+model Region {
+  id        String @id @default(uuid())
+  name      String @unique
+
+  reports   WasteReport[]
+}
+
+model WasteReport {
+  id           String   @id @default(uuid())
+
+  weight       Decimal  @db.Decimal(10,2)
+  reportDate   DateTime @default(now())
+
+  userId       String
+  wasteTypeId  String
+  regionId     String
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wasteType    WasteType @relation(fields: [wasteTypeId], references: [id], onDelete: Restrict)
+  region        Region    @relation(fields: [regionId], references: [id], onDelete: Restrict)
+
+  photo        WastePhoto?
+
+  @@unique([userId, wasteTypeId, regionId, reportDate])
+}
+
+model WastePhoto {
+  id        String @id @default(uuid())
+
+  imageUrl  String
+
+  reportId  String @unique
+  report    WasteReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
 }
 
 model Account {
@@ -32,6 +76,7 @@ model Account {
   type              String
   provider          String
   providerAccountId String
+
   refresh_token     String?
   access_token      String?
   expires_at        Int?
@@ -46,13 +91,11 @@ model Account {
 }
 
 model Session {
-  sessionToken String   @unique
+  sessionToken String   @id
   userId       String
   expires      DateTime
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([sessionToken])
 }
 
 model VerificationToken {
@@ -63,49 +106,7 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
-model WasteType {
-  id      Int    @id @default(autoincrement())
-  name    String
-
-  reports WasteReport[]
-}
-
-model Region {
-  id       Int    @id @default(autoincrement())
-  province String
-  city     String
-  district String?
-
-  reports  WasteReport[]
-}
-
-model WasteReport {
-  id           String    @id @default(uuid())
-
-  userId       String
-  wasteTypeId  Int
-  regionId     Int
-
-  image        String
-  weight       Decimal   @db.Decimal(10,2)
-  description  String?
-
-  status       Status    @default(PENDING)
-
-  createdAt    DateTime  @default(now())
-
-  user         User       @relation(fields: [userId], references: [id])
-  wasteType    WasteType  @relation(fields: [wasteTypeId], references: [id])
-  region        Region     @relation(fields: [regionId], references: [id])
-}
-
 enum Role {
   ADMIN
   USER
-}
-
-enum Status {
-  PENDING
-  PROCESSED
-  COMPLETED
 }
