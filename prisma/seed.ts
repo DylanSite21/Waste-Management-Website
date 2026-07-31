@@ -42,7 +42,7 @@ async function main() {
   console.log("🌱 Seeding database...");
 
   // =========================
-  // User
+  // Users
   // =========================
 
   const adminPassword = await hash("admin123", 10);
@@ -52,6 +52,7 @@ async function main() {
     data: {
       name: "Administrator",
       email: "admin@example.com",
+      noHp: "081234567890",
       password: adminPassword,
       role: "ADMIN",
     },
@@ -61,6 +62,7 @@ async function main() {
     data: {
       name: "John Doe",
       email: "user@example.com",
+      noHp: "081298765432",
       password: userPassword,
       role: "USER",
     },
@@ -94,54 +96,77 @@ async function main() {
 
   const jakartaPusat = await prisma.region.create({
     data: {
-      province: "DKI Jakarta",
-      city: "Jakarta Pusat",
-      district: "Gambir",
+      name: "Jakarta Pusat",
     },
   });
 
   const jakartaSelatan = await prisma.region.create({
     data: {
-      province: "DKI Jakarta",
-      city: "Jakarta Selatan",
-      district: "Kebayoran Baru",
+      name: "Jakarta Selatan",
     },
   });
 
   // =========================
-  // Waste Reports
+  // Report 1
   // =========================
 
-  await prisma.wasteReport.createMany({
-    data: [
-      {
-        userId: user.id,
-        wasteTypeId: organik.id,
-        regionId: jakartaPusat.id,
-        image: "/uploads/organik1.jpg",
-        weight: 12.5,
-        description: "Sampah daun dan sisa makanan",
-        status: "PENDING",
-      },
-      {
-        userId: user.id,
-        wasteTypeId: anorganik.id,
-        regionId: jakartaSelatan.id,
-        image: "/uploads/plastik.jpg",
-        weight: 7.2,
-        description: "Botol plastik dan kaleng",
-        status: "PROCESSED",
-      },
-      {
-        userId: user.id,
-        wasteTypeId: b3.id,
-        regionId: jakartaPusat.id,
-        image: "/uploads/baterai.jpg",
-        weight: 2.1,
-        description: "Baterai bekas",
-        status: "COMPLETED",
-      },
-    ],
+  const report1 = await prisma.wasteReport.create({
+    data: {
+      userId: user.id,
+      wasteTypeId: organik.id,
+      regionId: jakartaPusat.id,
+      weight: 12.5,
+      reportDate: new Date("2026-07-29"),
+    },
+  });
+
+  await prisma.wastePhoto.create({
+    data: {
+      imageUrl: "/uploads/organik1.jpg",
+      reportId: report1.id,
+    },
+  });
+
+  // =========================
+  // Report 2
+  // =========================
+
+  const report2 = await prisma.wasteReport.create({
+    data: {
+      userId: user.id,
+      wasteTypeId: anorganik.id,
+      regionId: jakartaSelatan.id,
+      weight: 7.2,
+      reportDate: new Date("2026-07-30"),
+    },
+  });
+
+  await prisma.wastePhoto.create({
+    data: {
+      imageUrl: "/uploads/plastik.jpg",
+      reportId: report2.id,
+    },
+  });
+
+  // =========================
+  // Report 3
+  // =========================
+
+  const report3 = await prisma.wasteReport.create({
+    data: {
+      userId: user.id,
+      wasteTypeId: b3.id,
+      regionId: jakartaPusat.id,
+      weight: 2.1,
+      reportDate: new Date("2026-07-31"),
+    },
+  });
+
+  await prisma.wastePhoto.create({
+    data: {
+      imageUrl: "/uploads/baterai.jpg",
+      reportId: report3.id,
+    },
   });
 
   console.log("✅ Database berhasil di-seed.");
