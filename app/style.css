@@ -15,21 +15,21 @@ table {
 th,
 td {
   border: 1px solid black;
+  padding: 0 1rem;
 }
 
 main section:first-of-type {
   display: flex;
-  justify-content: space-around;
+  /* justify-content: space-around; */
   width: 100%;
   text-align: center;
 
   & div {
     border: 1px solid black;
+    margin: 0 1rem;
   }
 }
-tr {
-  border-bottom: 1px solid #ddd;
-}
+
 section {
   width: max-content;
   /* padding: 0 1rem; */

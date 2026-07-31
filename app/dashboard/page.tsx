@@ -84,6 +84,30 @@ export default async function DashboardPage() {
         </div>
       </section>
 
+      <section className="mt-8 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <h2 className="text-xl font-semibold text-zinc-900">Menu User</h2>
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <a
+            href="/dashboard/user/reports/new"
+            className="rounded-xl border border-zinc-200 p-4 hover:bg-zinc-50"
+          >
+            Create Report
+          </a>
+          {/* <a
+            href="/dashboard"
+            className="rounded-xl border border-zinc-200 p-4 hover:bg-zinc-50"
+          >
+            View Personal Reports
+          </a> */}
+          {/* <a
+            href="/dashboard/user/profile"
+            className="rounded-xl border border-zinc-200 p-4 hover:bg-zinc-50"
+          >
+            Edit Profile
+          </a> */}
+        </div>
+      </section>
+
       <section className="mt-8 rounded-2xl bg-white p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-zinc-900">Laporan Saya</h2>
 
@@ -92,6 +116,7 @@ export default async function DashboardPage() {
             <thead>
               <tr className="border-b border-zinc-200 text-zinc-500">
                 <th className="px-3 py-2">No</th>
+                <th className="px-3 py-2">Gambar</th>
                 <th className="px-3 py-2">Jenis</th>
                 <th className="px-3 py-2">Wilayah</th>
                 <th className="px-3 py-2">Berat</th>
@@ -104,7 +129,7 @@ export default async function DashboardPage() {
               {reports.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={7}
                     className="px-3 py-4 text-center text-zinc-500"
                   >
                     Tidak ada data laporan.
@@ -114,6 +139,18 @@ export default async function DashboardPage() {
                 reports.map((report: any, index: number) => (
                   <tr key={report.id} className="border-b border-zinc-100">
                     <td className="px-3 py-3">{index + 1}</td>
+                    <td className="px-3 py-3">
+                      {report.image ? (
+                        <img
+                          src={report.image}
+                          alt="Gambar laporan"
+                          className="h-16 w-16 rounded-lg object-cover"
+                          style={{ width: "100px", aspectRatio: "1/1" }}
+                        />
+                      ) : (
+                        <div className="h-16 w-16 rounded-lg bg-zinc-200"></div>
+                      )}
+                    </td>
                     <td className="px-3 py-3">
                       {report.wasteType?.name ?? "-"}
                     </td>
