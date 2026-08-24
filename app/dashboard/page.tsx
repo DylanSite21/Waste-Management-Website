@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
+
 import LogoutButton from "@/app/components/LogoutButton";
+
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
@@ -19,15 +21,29 @@ export default async function DashboardPage() {
 
   let totalReports = 0;
   let totalWeight = 0;
-  let reports: Array<any> = [];
+  let reports: any[] = [];
 
   try {
+    // =========================
+    // Total Reports
+    // =========================
+
     totalReports = await prisma.wasteReport.count({
-      where: { userId },
+      where: {
+        userId,
+      },
     });
 
-    const aggregateResult = await prisma.wasteReport.aggregate({
-      where: { userId },
+    // =========================
+    // Total Weight
+    // =========================
+
+    const aggregateResult = await prisma.wasteReportItem.aggregate({
+      where: {
+        report: {
+          userId,
+        },
+      },
       _sum: {
         weight: true,
       },
@@ -35,16 +51,26 @@ export default async function DashboardPage() {
 
     totalWeight = Number(aggregateResult._sum.weight ?? 0);
 
+    // =========================
+    // Latest Reports
+    // =========================
+
     reports = await prisma.wasteReport.findMany({
-      where: { userId },
+      where: {
+        userId,
+      },
       take: 5,
       orderBy: {
-        createdAt: "desc",
+        reportDate: "desc",
       },
       include: {
-        user: true,
-        wasteType: true,
         region: true,
+        photo: true,
+        items: {
+          include: {
+            wasteType: true,
+          },
+        },
       },
     });
   } catch (error) {
@@ -53,61 +79,47 @@ export default async function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-zinc-50 p-6">
+      {/* Header */}
       <div className="mb-6 flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">
             User Dashboard
           </p>
+
           <h1 className="mt-2 text-2xl font-semibold text-zinc-900">
             Selamat datang, {session.user.name}
           </h1>
+
           <p className="mt-1 text-sm text-zinc-600">
             Anda melihat laporan yang telah Anda kirim.
           </p>
         </div>
+
         <LogoutButton />
       </div>
 
+      {/* Statistics */}
       <section className="grid gap-4 md:grid-cols-2">
+        {/* Total Laporan */}
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
           <h2 className="text-sm font-medium text-zinc-500">Total Laporan</h2>
+
           <p className="mt-2 text-3xl font-semibold text-zinc-900">
             {totalReports}
           </p>
         </div>
 
+        {/* Total Berat */}
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
           <h2 className="text-sm font-medium text-zinc-500">Total Berat</h2>
+
           <p className="mt-2 text-3xl font-semibold text-zinc-900">
-            {totalWeight} Kg
+            {totalWeight.toLocaleString("id-ID")} Kg
           </p>
         </div>
       </section>
 
-      <section className="mt-8 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-zinc-900">Menu User</h2>
-        <div className="mt-4 grid gap-3 md:grid-cols-2">
-          <a
-            href="/dashboard/user/reports/new"
-            className="rounded-xl border border-zinc-200 p-4 hover:bg-zinc-50"
-          >
-            Create Report
-          </a>
-          {/* <a
-            href="/dashboard"
-            className="rounded-xl border border-zinc-200 p-4 hover:bg-zinc-50"
-          >
-            View Personal Reports
-          </a> */}
-          {/* <a
-            href="/dashboard/user/profile"
-            className="rounded-xl border border-zinc-200 p-4 hover:bg-zinc-50"
-          >
-            Edit Profile
-          </a> */}
-        </div>
-      </section>
-
+      {/* Reports */}
       <section className="mt-8 rounded-2xl bg-white p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-zinc-900">Laporan Saya</h2>
 
@@ -120,7 +132,6 @@ export default async function DashboardPage() {
                 <th className="px-3 py-2">Jenis</th>
                 <th className="px-3 py-2">Wilayah</th>
                 <th className="px-3 py-2">Berat</th>
-                <th className="px-3 py-2">Status</th>
                 <th className="px-3 py-2">Tanggal</th>
               </tr>
             </thead>
@@ -129,39 +140,68 @@ export default async function DashboardPage() {
               {reports.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={7}
-                    className="px-3 py-4 text-center text-zinc-500"
+                    colSpan={6}
+                    className="px-3 py-6 text-center text-zinc-500"
                   >
                     Tidak ada data laporan.
                   </td>
                 </tr>
               ) : (
-                reports.map((report: any, index: number) => (
-                  <tr key={report.id} className="border-b border-zinc-100">
-                    <td className="px-3 py-3">{index + 1}</td>
-                    <td className="px-3 py-3">
-                      {report.image ? (
-                        <img
-                          src={report.image}
-                          alt="Gambar laporan"
-                          className="h-16 w-16 rounded-lg object-cover"
-                          style={{ width: "100px", aspectRatio: "1/1" }}
-                        />
-                      ) : (
-                        <div className="h-16 w-16 rounded-lg bg-zinc-200"></div>
-                      )}
-                    </td>
-                    <td className="px-3 py-3">
-                      {report.wasteType?.name ?? "-"}
-                    </td>
-                    <td className="px-3 py-3">{report.region?.city ?? "-"}</td>
-                    <td className="px-3 py-3">{Number(report.weight)} Kg</td>
-                    <td className="px-3 py-3">{report.status}</td>
-                    <td className="px-3 py-3">
-                      {new Date(report.createdAt).toLocaleDateString("id-ID")}
-                    </td>
-                  </tr>
-                ))
+                reports.map((report: any, index: number) => {
+                  // Total berat dari semua jenis sampah
+                  const totalReportWeight = report.items.reduce(
+                    (total: number, item: any) => total + Number(item.weight),
+                    0,
+                  );
+
+                  return (
+                    <tr key={report.id} className="border-b border-zinc-100">
+                      {/* No */}
+                      <td className="px-3 py-3">{index + 1}</td>
+
+                      {/* Gambar */}
+                      <td className="px-3 py-3">
+                        {report.photo?.imageUrl ? (
+                          <img
+                            src={report.photo.imageUrl}
+                            alt="Gambar laporan"
+                            className="h-[100px] w-[100px] rounded-lg object-cover"
+                          />
+                        ) : (
+                          <div className="text-zinc-400">Tidak ada gambar</div>
+                        )}
+                      </td>
+
+                      {/* Jenis Sampah */}
+                      <td className="px-3 py-3">
+                        {report.items.length > 0 ? (
+                          <div className="space-y-1">
+                            {report.items.map((item: any) => (
+                              <div key={item.id}>{item.wasteType.name}</div>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-zinc-400">Tidak ada</span>
+                        )}
+                      </td>
+
+                      {/* Wilayah */}
+                      <td className="px-3 py-3">{report.region.name}</td>
+
+                      {/* Berat */}
+                      <td className="px-3 py-3">
+                        {totalReportWeight.toLocaleString("id-ID")} Kg
+                      </td>
+
+                      {/* Tanggal */}
+                      <td className="px-3 py-3">
+                        {new Date(report.reportDate).toLocaleDateString(
+                          "id-ID",
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

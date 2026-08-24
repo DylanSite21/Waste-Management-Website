@@ -60,7 +60,7 @@ async function main() {
 
   const user = await prisma.user.create({
     data: {
-      name: "John Doe",
+      name: "Dylan",
       email: "user@example.com",
       noHp: "081298765432",
       password: userPassword,
@@ -113,10 +113,21 @@ async function main() {
   const report1 = await prisma.wasteReport.create({
     data: {
       userId: user.id,
-      wasteTypeId: organik.id,
       regionId: jakartaPusat.id,
-      weight: 12.5,
       reportDate: new Date("2026-07-29"),
+
+      items: {
+        create: [
+          {
+            wasteTypeId: organik.id,
+            weight: 12.5,
+          },
+          {
+            wasteTypeId: anorganik.id,
+            weight: 5.2,
+          },
+        ],
+      },
     },
   });
 
@@ -134,10 +145,21 @@ async function main() {
   const report2 = await prisma.wasteReport.create({
     data: {
       userId: user.id,
-      wasteTypeId: anorganik.id,
       regionId: jakartaSelatan.id,
-      weight: 7.2,
       reportDate: new Date("2026-07-30"),
+
+      items: {
+        create: [
+          {
+            wasteTypeId: anorganik.id,
+            weight: 7.2,
+          },
+          {
+            wasteTypeId: b3.id,
+            weight: 1.5,
+          },
+        ],
+      },
     },
   });
 
@@ -155,10 +177,21 @@ async function main() {
   const report3 = await prisma.wasteReport.create({
     data: {
       userId: user.id,
-      wasteTypeId: b3.id,
       regionId: jakartaPusat.id,
-      weight: 2.1,
       reportDate: new Date("2026-07-31"),
+
+      items: {
+        create: [
+          {
+            wasteTypeId: b3.id,
+            weight: 2.1,
+          },
+          {
+            wasteTypeId: organik.id,
+            weight: 3.8,
+          },
+        ],
+      },
     },
   });
 

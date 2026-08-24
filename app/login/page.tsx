@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { FormEvent, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import "../form.css";
 
 function LoginForm() {
   const router = useRouter();
@@ -36,77 +37,44 @@ function LoginForm() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 py-12">
-      <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">
-          Masuk
-        </p>
-        <h1 className="mt-3 text-3xl font-semibold text-zinc-900">
-          Selamat datang kembali
-        </h1>
-        <p className="mt-2 text-sm text-zinc-600">
-          Masukkan email dan password Anda untuk mengakses sistem.
-        </p>
-
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          {error ? (
-            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-              {error}
-            </div>
-          ) : null}
+    <main>
+      <div>
+        <form onSubmit={handleSubmit}>
+          <p>Masuk</p>
+          <h1>Waste Management</h1>
+          <h2>Selamat datang kembali</h2>
+          <p>Masukkan email dan password Anda untuk mengakses sistem.</p>
+          {error ? <div>{error}</div> : null}
 
           <div>
-            <label
-              className="mb-1 block text-sm font-medium text-zinc-700"
-              htmlFor="email"
-            >
-              Email
-            </label>
+            <label htmlFor="email">Email</label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 outline-none ring-0 focus:border-zinc-900"
               required
             />
           </div>
 
           <div>
-            <label
-              className="mb-1 block text-sm font-medium text-zinc-700"
-              htmlFor="password"
-            >
-              Password
-            </label>
+            <label htmlFor="password">Password</label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 outline-none ring-0 focus:border-zinc-900"
               required
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full rounded-lg bg-zinc-900 px-4 py-3 font-medium text-white transition hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-70"
-          >
+          <button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Memproses..." : "Masuk"}
           </button>
+          <p>
+            Belum punya akun? <Link href="/register">Daftar sekarang</Link>
+          </p>
         </form>
-
-        <p className="mt-6 text-sm text-zinc-600">
-          Belum punya akun?{" "}
-          <Link
-            href="/register"
-            className="font-medium text-emerald-600 hover:underline"
-          >
-            Daftar sekarang
-          </Link>
-        </p>
       </div>
     </main>
   );

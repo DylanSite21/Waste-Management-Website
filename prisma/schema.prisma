@@ -20,55 +20,62 @@ model User {
   password  String
   role      Role     @default(USER)
 
-  reports   WasteReport[]
-
-  // Authentication
-  accounts  Account[]
-  sessions  Session[]
+  reports  WasteReport[]
+  accounts Account[]
+  sessions Session[]
 
   createdAt DateTime @default(now())
 }
 
 model WasteType {
-  id        String @id @default(uuid())
-  name      String @unique
+  id   String @id @default(uuid())
+  name String @unique
 
-  reports   WasteReport[]
+  items WasteReportItem[]
 }
 
 model Region {
-  id        String @id @default(uuid())
-  name      String @unique
+  id   String @id @default(uuid())
+  name String @unique
 
-  reports   WasteReport[]
+  reports WasteReport[]
 }
 
 model WasteReport {
-  id           String   @id @default(uuid())
+  id         String   @id @default(uuid())
+  reportDate DateTime @default(now())
 
-  weight       Decimal  @db.Decimal(10,2)
-  reportDate   DateTime @default(now())
+  userId   String
+  regionId String
 
-  userId       String
-  wasteTypeId  String
-  regionId     String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  region Region @relation(fields: [regionId], references: [id], onDelete: Restrict)
 
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  wasteType    WasteType @relation(fields: [wasteTypeId], references: [id], onDelete: Restrict)
-  region        Region    @relation(fields: [regionId], references: [id], onDelete: Restrict)
+  items WasteReportItem[]
 
-  photo        WastePhoto?
+  photo WastePhoto?
+}
 
-  @@unique([userId, wasteTypeId, regionId, reportDate])
+model WasteReportItem {
+  id String @id @default(uuid())
+
+  reportId    String
+  wasteTypeId String
+  weight      Decimal @db.Decimal(10,2)
+
+  report    WasteReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  wasteType WasteType   @relation(fields: [wasteTypeId], references: [id], onDelete: Restrict)
+
+  @@unique([reportId, wasteTypeId])
 }
 
 model WastePhoto {
-  id        String @id @default(uuid())
+  id String @id @default(uuid())
 
-  imageUrl  String
+  imageUrl String
 
-  reportId  String @unique
-  report    WasteReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  reportId String @unique
+  report WasteReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
 }
 
 model Account {
