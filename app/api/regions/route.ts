@@ -9,11 +9,7 @@ export async function GET() {
 export async function POST(request: Request) {
   const body = await request.json();
   const region = await prisma.region.create({
-    data: {
-      province: body.province,
-      city: body.city,
-      district: body.district ?? null,
-    },
+    data: { name: body.name.trim() },
   });
 
   return NextResponse.json(region, { status: 201 });

@@ -10,14 +10,13 @@ export default function CreateReportForm({
   regions,
 }: {
   userId: string;
-  wasteTypes: Array<{ id: number; name: string }>;
-  regions: Array<{ id: number; city: string; province: string }>;
+  wasteTypes: Array<{ id: string; name: string }>;
+  regions: Array<{ id: string; name: string }>;
 }) {
   const router = useRouter();
   const [wasteTypeId, setWasteTypeId] = useState("");
   const [regionId, setRegionId] = useState("");
   const [weight, setWeight] = useState("");
-  const [description, setDescription] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState("");
 
@@ -29,7 +28,6 @@ export default function CreateReportForm({
     formData.append("wasteTypeId", wasteTypeId);
     formData.append("regionId", regionId);
     formData.append("weight", weight);
-    formData.append("description", description);
 
     if (selectedFile) {
       formData.append("image", selectedFile);
@@ -70,7 +68,7 @@ export default function CreateReportForm({
         <option value="">Pilih wilayah</option>
         {regions.map((item) => (
           <option key={item.id} value={item.id}>
-            {item.city} - {item.province}
+            {item.name}
           </option>
         ))}
       </select>
@@ -104,13 +102,6 @@ export default function CreateReportForm({
         />
       ) : null}
 
-      <textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Deskripsi"
-        className="w-full rounded-lg border px-3 py-2"
-        rows={4}
-      />
       <button
         type="submit"
         className="rounded-lg bg-zinc-900 px-4 py-2 text-white"

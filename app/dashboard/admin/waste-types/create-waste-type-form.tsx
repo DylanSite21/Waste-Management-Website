@@ -6,6 +6,7 @@ import { FormEvent, useState } from "react";
 export default function CreateWasteTypeForm() {
   const router = useRouter();
   const [name, setName] = useState("");
+  const [pointPerKg, setPointPerKg] = useState("");
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -13,10 +14,11 @@ export default function CreateWasteTypeForm() {
     await fetch("/api/waste-types", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, pointPerKg }),
     });
 
     setName("");
+    setPointPerKg("");
     router.refresh();
   }
 
@@ -27,6 +29,16 @@ export default function CreateWasteTypeForm() {
         onChange={(e) => setName(e.target.value)}
         placeholder="Nama waste type"
         className="flex-1 rounded-lg border px-3 py-2"
+        required
+      />
+      <input
+        value={pointPerKg}
+        onChange={(e) => setPointPerKg(e.target.value)}
+        placeholder="Poin/kg"
+        type="number"
+        min="0"
+        step="0.01"
+        className="w-32 rounded-lg border px-3 py-2"
         required
       />
       <button

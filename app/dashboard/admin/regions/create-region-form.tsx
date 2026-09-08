@@ -5,9 +5,7 @@ import { FormEvent, useState } from "react";
 
 export default function CreateRegionForm() {
   const router = useRouter();
-  const [province, setProvince] = useState("");
-  const [city, setCity] = useState("");
-  const [district, setDistrict] = useState("");
+  const [name, setName] = useState("");
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -15,36 +13,21 @@ export default function CreateRegionForm() {
     await fetch("/api/regions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ province, city, district }),
+      body: JSON.stringify({ name }),
     });
 
-    setProvince("");
-    setCity("");
-    setDistrict("");
+    setName("");
     router.refresh();
   }
 
   return (
     <form onSubmit={handleSubmit} className="mt-4 grid gap-3 md:grid-cols-3">
       <input
-        value={province}
-        onChange={(e) => setProvince(e.target.value)}
-        placeholder="Provinsi"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Nama wilayah"
         className="rounded-lg border px-3 py-2"
         required
-      />
-      <input
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
-        placeholder="Kota"
-        className="rounded-lg border px-3 py-2"
-        required
-      />
-      <input
-        value={district}
-        onChange={(e) => setDistrict(e.target.value)}
-        placeholder="Distrik"
-        className="rounded-lg border px-3 py-2"
       />
       <button
         type="submit"

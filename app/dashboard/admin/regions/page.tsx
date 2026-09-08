@@ -48,18 +48,14 @@ export default async function AdminRegionsPage() {
             <thead>
               <tr className="border-b border-zinc-200 text-zinc-500">
                 <th className="px-3 py-2">ID</th>
-                <th className="px-3 py-2">Provinsi</th>
-                <th className="px-3 py-2">Kota</th>
-                <th className="px-3 py-2">Distrik</th>
+                <th className="px-3 py-2">Nama Wilayah</th>
               </tr>
             </thead>
             <tbody>
               {regions.map((region) => (
                 <tr key={region.id} className="border-b border-zinc-100">
                   <td className="px-3 py-3">{region.id}</td>
-                  <td className="px-3 py-3">{region.province}</td>
-                  <td className="px-3 py-3">{region.city}</td>
-                  <td className="px-3 py-3">{region.district ?? "-"}</td>
+                  <td className="px-3 py-3">{region.name}</td>
                 </tr>
               ))}
             </tbody>

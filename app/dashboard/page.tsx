@@ -6,6 +6,23 @@ import LogoutButton from "@/app/components/LogoutButton";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
+type ReportRow = {
+  id: string;
+  reportDate: Date;
+  status: string;
+  region: { name: string };
+  photo: { imageUrl: string } | null;
+  items: Array<{ id: string; weight: number | { toString(): string }; wasteType: { name: string } }>;
+};
+
+type PointTransactionRow = {
+  id: string;
+  type: string;
+  points: number;
+  description: string | null;
+  createdAt: Date;
+};
+
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
 
@@ -21,7 +38,9 @@ export default async function DashboardPage() {
 
   let totalReports = 0;
   let totalWeight = 0;
-  let reports: any[] = [];
+  let pointsBalance = 0;
+  let transactions: PointTransactionRow[] = [];
+  let reports: ReportRow[] = [];
 
   try {
     // =========================
@@ -32,6 +51,17 @@ export default async function DashboardPage() {
       where: {
         userId,
       },
+    });
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { pointsBalance: true },
+    });
+    pointsBalance = user?.pointsBalance ?? 0;
+    transactions = await prisma.pointTransaction.findMany({
+      where: { userId },
+      take: 5,
+      orderBy: { createdAt: "desc" },
     });
 
     // =========================
@@ -99,7 +129,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Statistics */}
-      <section className="grid gap-4 md:grid-cols-2">
+      <section className="grid gap-4 md:grid-cols-3">
         {/* Total Laporan */}
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
           <h2 className="text-sm font-medium text-zinc-500">Total Laporan</h2>
@@ -107,6 +137,16 @@ export default async function DashboardPage() {
           <p className="mt-2 text-3xl font-semibold text-zinc-900">
             {totalReports}
           </p>
+        </div>
+
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
+          <h2 className="text-sm font-medium text-emerald-800">Saldo Poin</h2>
+          <p className="mt-2 text-3xl font-semibold text-emerald-950">
+            {pointsBalance.toLocaleString("id-ID")}
+          </p>
+          <a href="/dashboard/user/rewards" className="mt-2 inline-block text-sm font-semibold text-emerald-700">
+            Lihat katalog hadiah
+          </a>
         </div>
 
         {/* Total Berat */}
@@ -133,6 +173,7 @@ export default async function DashboardPage() {
                 <th className="px-3 py-2">Wilayah</th>
                 <th className="px-3 py-2">Berat</th>
                 <th className="px-3 py-2">Tanggal</th>
+                <th className="px-3 py-2">Status</th>
               </tr>
             </thead>
 
@@ -147,10 +188,10 @@ export default async function DashboardPage() {
                   </td>
                 </tr>
               ) : (
-                reports.map((report: any, index: number) => {
+                reports.map((report, index) => {
                   // Total berat dari semua jenis sampah
                   const totalReportWeight = report.items.reduce(
-                    (total: number, item: any) => total + Number(item.weight),
+                    (total: number, item) => total + Number(item.weight),
                     0,
                   );
 
@@ -171,12 +212,13 @@ export default async function DashboardPage() {
                           <div className="text-zinc-400">Tidak ada gambar</div>
                         )}
                       </td>
+                      <td className="px-3 py-3 font-medium">{report.status}</td>
 
                       {/* Jenis Sampah */}
                       <td className="px-3 py-3">
                         {report.items.length > 0 ? (
                           <div className="space-y-1">
-                            {report.items.map((item: any) => (
+                            {report.items.map((item) => (
                               <div key={item.id}>{item.wasteType.name}</div>
                             ))}
                           </div>
@@ -203,6 +245,20 @@ export default async function DashboardPage() {
                   );
                 })
               )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="mt-8 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <h2 className="text-xl font-semibold text-zinc-900">Transaksi Poin Terbaru</h2>
+        <div className="mt-4 overflow-x-auto">
+          <table className="min-w-full text-left text-sm text-zinc-700">
+            <thead><tr className="border-b border-zinc-200 text-zinc-500"><th className="px-3 py-2">Jenis</th><th className="px-3 py-2">Poin</th><th className="px-3 py-2">Keterangan</th><th className="px-3 py-2">Tanggal</th></tr></thead>
+            <tbody>
+              {transactions.length === 0 ? <tr><td colSpan={4} className="px-3 py-6 text-center text-zinc-500">Belum ada transaksi.</td></tr> : transactions.map((transaction) => (
+                <tr key={transaction.id} className="border-b border-zinc-100"><td className="px-3 py-3">{transaction.type}</td><td className="px-3 py-3">{transaction.type === "REDEEM" ? "-" : "+"}{transaction.points}</td><td className="px-3 py-3">{transaction.description ?? "-"}</td><td className="px-3 py-3">{new Date(transaction.createdAt).toLocaleDateString("id-ID")}</td></tr>
+              ))}
             </tbody>
           </table>
         </div>

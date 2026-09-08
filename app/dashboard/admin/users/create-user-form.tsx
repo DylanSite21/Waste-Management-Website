@@ -7,6 +7,7 @@ export default function CreateUserForm() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [noHp, setNoHp] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("USER");
 
@@ -16,7 +17,7 @@ export default function CreateUserForm() {
     await fetch("/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, role }),
+      body: JSON.stringify({ name, email, noHp, password, role }),
     });
 
     router.refresh();
@@ -24,6 +25,14 @@ export default function CreateUserForm() {
 
   return (
     <form onSubmit={handleSubmit} className="mt-4 grid gap-3 md:grid-cols-2">
+      <input
+        value={noHp}
+        onChange={(e) => setNoHp(e.target.value)}
+        placeholder="Nomor HP"
+        type="tel"
+        className="rounded-lg border px-3 py-2"
+        required
+      />
       <input
         value={name}
         onChange={(e) => setName(e.target.value)}

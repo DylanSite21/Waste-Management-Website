@@ -9,6 +9,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [noHp, setNoHp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -39,6 +40,7 @@ export default function RegisterPage() {
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim().toLowerCase(),
+          noHp: noHp.trim(),
           password,
         }),
       });
@@ -68,6 +70,17 @@ export default function RegisterPage() {
           <h1>Buat akun baru</h1>
           <p>Daftarkan diri Anda untuk mengakses dashboard sistem.</p>
           {error ? <div>{error}</div> : null}
+
+          <div>
+            <label htmlFor="noHp">Nomor HP</label>
+            <input
+              id="noHp"
+              type="tel"
+              value={noHp}
+              onChange={(event) => setNoHp(event.target.value)}
+              required
+            />
+          </div>
 
           <div>
             <label htmlFor="name">Nama lengkap</label>

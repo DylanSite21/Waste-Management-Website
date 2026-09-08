@@ -4,11 +4,11 @@ import { prisma } from "@/lib/db";
 
 export async function POST(request: Request) {
   try {
-    const { name, email, password } = await request.json();
+    const { name, email, noHp, password } = await request.json();
 
-    if (!name || !email || !password) {
+    if (!name || !email || !noHp || !password) {
       return NextResponse.json(
-        { message: "Nama, email, dan password wajib diisi." },
+        { message: "Nama, email, nomor HP, dan password wajib diisi." },
         { status: 400 }
       );
     }
@@ -32,6 +32,7 @@ export async function POST(request: Request) {
       data: {
         name: name.toString().trim(),
         email: normalizedEmail,
+        noHp: noHp.toString().trim(),
         password: hashedPassword,
       },
     });

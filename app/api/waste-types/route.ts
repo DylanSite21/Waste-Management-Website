@@ -8,6 +8,8 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const wasteType = await prisma.wasteType.create({ data: { name: body.name } });
+  const wasteType = await prisma.wasteType.create({
+    data: { name: body.name.trim(), pointPerKg: Number(body.pointPerKg) },
+  });
   return NextResponse.json(wasteType, { status: 201 });
 }

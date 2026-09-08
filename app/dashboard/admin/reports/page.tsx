@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import ReportStatusActions from "./report-status-actions";
 
 export default async function AdminReportsPage() {
   const session = await getServerSession(authOptions);
@@ -70,6 +71,7 @@ export default async function AdminReportsPage() {
                 <th className="px-3 py-3">Wilayah</th>
                 <th className="px-3 py-3">Berat</th>
                 <th className="px-3 py-3">Tanggal</th>
+                <th className="px-3 py-3">Status</th>
               </tr>
             </thead>
 
@@ -140,6 +142,9 @@ export default async function AdminReportsPage() {
                         {new Date(report.reportDate).toLocaleDateString(
                           "id-ID",
                         )}
+                      </td>
+                      <td className="px-3 py-3">
+                        <ReportStatusActions reportId={report.id} status={report.status} />
                       </td>
                     </tr>
                   );

@@ -6,12 +6,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const body = await request.json();
 
   const region = await prisma.region.update({
-    where: { id: Number(id) },
-    data: {
-      province: body.province,
-      city: body.city,
-      district: body.district ?? null,
-    },
+    where: { id },
+    data: { name: body.name.trim() },
   });
 
   return NextResponse.json(region);
@@ -20,8 +16,15 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  await prisma.wasteReport.deleteMany({ where: { regionId: Number(id) } });
-  await prisma.region.delete({ where: { id: Number(id) } });
+  const reportCount = await prisma.wasteReport.count({ where: { regionId: id } });
+  if (reportCount > 0) {
+    return NextResponse.json(
+      { error: "Wilayah tidak dapat dihapus karena masih memiliki laporan." },
+      { status: 409 },
+    );
+  }
+
+  await prisma.region.delete({ where: { id } });
 
   return NextResponse.json({ success: true });
 }

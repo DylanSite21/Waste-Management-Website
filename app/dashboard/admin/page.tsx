@@ -5,6 +5,15 @@ import LogoutButton from "@/app/components/LogoutButton";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
+type ReportRow = {
+  id: string;
+  reportDate: Date;
+  user: { name: string };
+  region: { name: string };
+  photo: { imageUrl: string } | null;
+  items: Array<{ id: string; weight: number | { toString(): string }; wasteType: { name: string } }>;
+};
+
 export default async function AdminDashboardPage() {
   const session = await getServerSession(authOptions);
 
@@ -20,7 +29,7 @@ export default async function AdminDashboardPage() {
   let totalReports = 0;
   let totalRegions = 0;
   let totalWeight = 0;
-  let reports: any[] = [];
+  let reports: ReportRow[] = [];
 
   try {
     // =========================
@@ -165,6 +174,12 @@ export default async function AdminDashboardPage() {
           >
             View Statistics
           </a>
+          <a
+            href="/dashboard/admin/rewards"
+            className="rounded-xl border border-zinc-200 p-4 hover:bg-zinc-50"
+          >
+            Kelola Hadiah & Penukaran
+          </a>
         </div>
       </section>
 
@@ -197,10 +212,10 @@ export default async function AdminDashboardPage() {
                   </td>
                 </tr>
               ) : (
-                reports.map((report: any, index: number) => {
+                reports.map((report, index) => {
                   // Hitung total berat dari semua WasteReportItem
                   const totalReportWeight = report.items.reduce(
-                    (total: number, item: any) => total + Number(item.weight),
+                    (total: number, item) => total + Number(item.weight),
                     0,
                   );
 
@@ -229,7 +244,7 @@ export default async function AdminDashboardPage() {
                       <td className="px-3 py-3">
                         {report.items.length > 0 ? (
                           <div className="space-y-1">
-                            {report.items.map((item: any) => (
+                            {report.items.map((item) => (
                               <div key={item.id}>{item.wasteType.name}</div>
                             ))}
                           </div>
