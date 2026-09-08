@@ -18,8 +18,18 @@ export default async function NewReportPage() {
 
   const wasteTypes = await prisma.wasteType.findMany({
     orderBy: { id: "asc" },
+    select: {
+      id: true,
+      name: true,
+    },
   });
-  const regions = await prisma.region.findMany({ orderBy: { id: "asc" } });
+  const regions = await prisma.region.findMany({
+    orderBy: { id: "asc" },
+    select: {
+      id: true,
+      name: true,
+    },
+  });
 
   return (
     <main className="min-h-screen bg-zinc-50 p-6">

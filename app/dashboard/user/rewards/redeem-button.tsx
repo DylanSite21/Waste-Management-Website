@@ -9,10 +9,25 @@ export default function RedeemButton({ rewardId }: { rewardId: string }) {
   async function redeem() {
     setBusy(true);
     try {
-      const response = await fetch("/api/redemptions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ rewardId }) });
+      const response = await fetch("/api/redemptions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rewardId }),
+      });
       if (response.ok) router.refresh();
       else alert((await response.json()).error ?? "Penukaran gagal.");
-    } finally { setBusy(false); }
+    } finally {
+      setBusy(false);
+    }
   }
-  return <button type="button" onClick={redeem} disabled={busy} className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{busy ? "Memproses..." : "Tukar poin"}</button>;
+  return (
+    <button
+      type="button"
+      onClick={redeem}
+      disabled={busy}
+      className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+    >
+      {busy ? "Memproses..." : "Tukar poin"}
+    </button>
+  );
 }

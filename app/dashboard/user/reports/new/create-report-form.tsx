@@ -19,9 +19,13 @@ export default function CreateReportForm({
   const [weight, setWeight] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
+    setError("");
+    setIsSubmitting(true);
 
     const formData = new FormData();
     formData.append("userId", userId);
@@ -38,13 +42,23 @@ export default function CreateReportForm({
       body: formData,
     });
 
-    if (response.ok) {
-      router.push("/dashboard");
+    if (!response.ok) {
+      const data = await response.json().catch(() => null);
+      setError(data?.error ?? "Laporan gagal disimpan.");
+      setIsSubmitting(false);
+      return;
     }
+
+    router.push("/dashboard");
   }
 
   return (
     <form onSubmit={handleSubmit} className={`{w-min} ${styles.form}`}>
+      {error ? (
+        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+          {error}
+        </p>
+      ) : null}
       <select
         value={wasteTypeId}
         onChange={(e) => setWasteTypeId(e.target.value)}
@@ -104,9 +118,10 @@ export default function CreateReportForm({
 
       <button
         type="submit"
+        disabled={isSubmitting}
         className="rounded-lg bg-zinc-900 px-4 py-2 text-white"
       >
-        Simpan Laporan
+        {isSubmitting ? "Menyimpan..." : "Simpan Laporan"}
       </button>
     </form>
   );

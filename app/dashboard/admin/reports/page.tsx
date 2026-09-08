@@ -144,7 +144,10 @@ export default async function AdminReportsPage() {
                         )}
                       </td>
                       <td className="px-3 py-3">
-                        <ReportStatusActions reportId={report.id} status={report.status} />
+                        <ReportStatusActions
+                          reportId={report.id}
+                          status={report.status}
+                        />
                       </td>
                     </tr>
                   );

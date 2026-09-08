@@ -29,7 +29,9 @@ export default function ReportStatusActions({
 
   if (status !== "PENDING") {
     return (
-      <span className={status === "VERIFIED" ? "text-emerald-700" : "text-rose-700"}>
+      <span
+        className={status === "VERIFIED" ? "text-emerald-700" : "text-rose-700"}
+      >
         {status === "VERIFIED" ? "Terverifikasi" : "Ditolak"}
       </span>
     );

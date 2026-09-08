@@ -59,7 +59,9 @@ export default async function AdminWasteTypesPage() {
                 <tr key={item.id} className="border-b border-zinc-100">
                   <td className="px-3 py-3">{item.id}</td>
                   <td className="px-3 py-3">{item.name}</td>
-                  <td className="px-3 py-3">{Number(item.pointPerKg).toLocaleString("id-ID")}</td>
+                  <td className="px-3 py-3">
+                    {Number(item.pointPerKg).toLocaleString("id-ID")}
+                  </td>
                 </tr>
               ))}
             </tbody>

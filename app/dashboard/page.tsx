@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
+import Link from "next/link";
 
 import LogoutButton from "@/app/components/LogoutButton";
 
@@ -12,7 +13,11 @@ type ReportRow = {
   status: string;
   region: { name: string };
   photo: { imageUrl: string } | null;
-  items: Array<{ id: string; weight: number | { toString(): string }; wasteType: { name: string } }>;
+  items: Array<{
+    id: string;
+    weight: number | { toString(): string };
+    wasteType: { name: string };
+  }>;
 };
 
 type PointTransactionRow = {
@@ -125,7 +130,15 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        <LogoutButton />
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard/user/reports/new"
+            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+          >
+            Tambah Laporan
+          </Link>
+          <LogoutButton />
+        </div>
       </div>
 
       {/* Statistics */}
@@ -144,7 +157,10 @@ export default async function DashboardPage() {
           <p className="mt-2 text-3xl font-semibold text-emerald-950">
             {pointsBalance.toLocaleString("id-ID")}
           </p>
-          <a href="/dashboard/user/rewards" className="mt-2 inline-block text-sm font-semibold text-emerald-700">
+          <a
+            href="/dashboard/user/rewards"
+            className="mt-2 inline-block text-sm font-semibold text-emerald-700"
+          >
             Lihat katalog hadiah
           </a>
         </div>
@@ -251,14 +267,48 @@ export default async function DashboardPage() {
       </section>
 
       <section className="mt-8 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-zinc-900">Transaksi Poin Terbaru</h2>
+        <h2 className="text-xl font-semibold text-zinc-900">
+          Transaksi Poin Terbaru
+        </h2>
         <div className="mt-4 overflow-x-auto">
           <table className="min-w-full text-left text-sm text-zinc-700">
-            <thead><tr className="border-b border-zinc-200 text-zinc-500"><th className="px-3 py-2">Jenis</th><th className="px-3 py-2">Poin</th><th className="px-3 py-2">Keterangan</th><th className="px-3 py-2">Tanggal</th></tr></thead>
+            <thead>
+              <tr className="border-b border-zinc-200 text-zinc-500">
+                <th className="px-3 py-2">Jenis</th>
+                <th className="px-3 py-2">Poin</th>
+                <th className="px-3 py-2">Keterangan</th>
+                <th className="px-3 py-2">Tanggal</th>
+              </tr>
+            </thead>
             <tbody>
-              {transactions.length === 0 ? <tr><td colSpan={4} className="px-3 py-6 text-center text-zinc-500">Belum ada transaksi.</td></tr> : transactions.map((transaction) => (
-                <tr key={transaction.id} className="border-b border-zinc-100"><td className="px-3 py-3">{transaction.type}</td><td className="px-3 py-3">{transaction.type === "REDEEM" ? "-" : "+"}{transaction.points}</td><td className="px-3 py-3">{transaction.description ?? "-"}</td><td className="px-3 py-3">{new Date(transaction.createdAt).toLocaleDateString("id-ID")}</td></tr>
-              ))}
+              {transactions.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="px-3 py-6 text-center text-zinc-500"
+                  >
+                    Belum ada transaksi.
+                  </td>
+                </tr>
+              ) : (
+                transactions.map((transaction) => (
+                  <tr key={transaction.id} className="border-b border-zinc-100">
+                    <td className="px-3 py-3">{transaction.type}</td>
+                    <td className="px-3 py-3">
+                      {transaction.type === "REDEEM" ? "-" : "+"}
+                      {transaction.points}
+                    </td>
+                    <td className="px-3 py-3">
+                      {transaction.description ?? "-"}
+                    </td>
+                    <td className="px-3 py-3">
+                      {new Date(transaction.createdAt).toLocaleDateString(
+                        "id-ID",
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

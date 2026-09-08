@@ -11,7 +11,11 @@ type ReportRow = {
   user: { name: string };
   region: { name: string };
   photo: { imageUrl: string } | null;
-  items: Array<{ id: string; weight: number | { toString(): string }; wasteType: { name: string } }>;
+  items: Array<{
+    id: string;
+    weight: number | { toString(): string };
+    wasteType: { name: string };
+  }>;
 };
 
 export default async function AdminDashboardPage() {
