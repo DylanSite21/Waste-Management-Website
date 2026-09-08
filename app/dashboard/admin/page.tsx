@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
+import Image from "next/image";
 
 import LogoutButton from "@/app/components/LogoutButton";
 import { authOptions } from "@/lib/auth";
@@ -231,7 +232,7 @@ export default async function AdminDashboardPage() {
                       {/* Gambar */}
                       <td className="px-3 py-3">
                         {report.photo?.imageUrl ? (
-                          <img
+                          <Image
                             src={report.photo.imageUrl}
                             alt="Gambar laporan"
                             className="rounded-lg object-cover"

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 import Link from "next/link";
+import Image from "next/image";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -102,13 +103,13 @@ export default async function AdminReportsPage() {
                       {/* Gambar */}
                       <td className="px-3 py-3">
                         {report.photo?.imageUrl ? (
-                          <img
+                          <Image
                             src={report.photo.imageUrl}
                             alt="Gambar laporan"
-                            className="h-[100px] w-[100px] rounded-lg object-cover"
+                            className="h-25 w-25 rounded-lg object-cover"
                           />
                         ) : (
-                          <div className="flex h-[100px] w-[100px] items-center justify-center rounded-lg bg-zinc-200 text-xs text-zinc-500">
+                          <div className="flex h-25 w-25 items-center justify-center rounded-lg bg-zinc-200 text-xs text-zinc-500">
                             Tidak ada gambar
                           </div>
                         )}

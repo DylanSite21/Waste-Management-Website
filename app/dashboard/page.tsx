@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 import Link from "next/link";
+import Image from "next/image";
 
 import LogoutButton from "@/app/components/LogoutButton";
 
@@ -219,10 +220,10 @@ export default async function DashboardPage() {
                       {/* Gambar */}
                       <td className="px-3 py-3">
                         {report.photo?.imageUrl ? (
-                          <img
+                          <Image
                             src={report.photo.imageUrl}
                             alt="Gambar laporan"
-                            className="h-[100px] w-[100px] rounded-lg object-cover"
+                            className="h-25 w-25 rounded-lg object-cover"
                           />
                         ) : (
                           <div className="text-zinc-400">Tidak ada gambar</div>

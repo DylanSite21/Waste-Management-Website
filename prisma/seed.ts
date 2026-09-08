@@ -48,8 +48,8 @@ async function main() {
 
   const adminPassword = await hash("admin123", 10);
   const userPassword = await hash("user123", 10);
-
-  const admin = await prisma.user.create({
+  // buat akun admin
+  await prisma.user.create({
     data: {
       name: "Administrator",
       email: "admin@example.com",
@@ -305,3 +305,4 @@ main()
     await prisma.$disconnect();
     process.exit(1);
   });
+

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import styles from "../style.module.css";
+import Image from "next/image";
 
 export default function CreateReportForm({
   userId,
@@ -109,7 +110,7 @@ export default function CreateReportForm({
       />
 
       {previewUrl ? (
-        <img
+        <Image
           src={previewUrl}
           alt="Preview gambar"
           className="h-48 w-full rounded-lg object-cover"
