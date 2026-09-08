@@ -12,6 +12,7 @@ datasource db {
   provider = "postgresql"
 }
 
+
 model User {
   id        String   @id @default(uuid())
   name      String
@@ -19,63 +20,16 @@ model User {
   noHp      String   @unique
   password  String
   role      Role     @default(USER)
-
   reports  WasteReport[]
   accounts Account[]
   sessions Session[]
-
   createdAt DateTime @default(now())
-}
 
-model WasteType {
-  id   String @id @default(uuid())
-  name String @unique
-
-  items WasteReportItem[]
-}
-
-model Region {
-  id   String @id @default(uuid())
-  name String @unique
-
-  reports WasteReport[]
-}
-
-model WasteReport {
-  id         String   @id @default(uuid())
-  reportDate DateTime @default(now())
-
-  userId   String
-  regionId String
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  region Region @relation(fields: [regionId], references: [id], onDelete: Restrict)
-
-  items WasteReportItem[]
-
-  photo WastePhoto?
-}
-
-model WasteReportItem {
-  id String @id @default(uuid())
-
-  reportId    String
-  wasteTypeId String
-  weight      Decimal @db.Decimal(10,2)
-
-  report    WasteReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
-  wasteType WasteType   @relation(fields: [wasteTypeId], references: [id], onDelete: Restrict)
-
-  @@unique([reportId, wasteTypeId])
-}
-
-model WastePhoto {
-  id String @id @default(uuid())
-
-  imageUrl String
-
-  reportId String @unique
-  report WasteReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  // >>> FITUR TRANSAKSI POIN
+  pointsBalance     Int                @default(0) // cache saldo poin, sinkron via PointTransaction
+  pointTransactions PointTransaction[]
+  redemptions       Redemption[]
+  // <<< FITUR TRANSAKSI POIN
 }
 
 model Account {
@@ -83,7 +37,6 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-
   refresh_token     String?
   access_token      String?
   expires_at        Int?
@@ -91,9 +44,7 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@id([provider, providerAccountId])
 }
 
@@ -101,7 +52,6 @@ model Session {
   sessionToken String   @id
   userId       String
   expires      DateTime
-
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -109,11 +59,133 @@ model VerificationToken {
   identifier String
   token      String
   expires    DateTime
-
   @@id([identifier, token])
 }
 
 enum Role {
   ADMIN
   USER
+}
+
+// =========================================================
+// PENGELOLAAN SAMPAH
+// =========================================================
+
+model WasteType {
+  id   String @id @default(uuid())
+  name String @unique
+  items WasteReportItem[]
+
+  // >>> FITUR TRANSAKSI POIN
+  pointPerKg Decimal @db.Decimal(10,2) @default(0) // konversi 1 kg sampah jenis ini = berapa poin
+  // <<< FITUR TRANSAKSI POIN
+}
+
+model Region {
+  id   String @id @default(uuid())
+  name String @unique
+  reports WasteReport[]
+}
+
+model WasteReport {
+  id         String   @id @default(uuid())
+  reportDate DateTime @default(now())
+  userId   String
+  regionId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  region Region @relation(fields: [regionId], references: [id], onDelete: Restrict)
+  items WasteReportItem[]
+  photo WastePhoto?
+
+  // >>> FITUR TRANSAKSI POIN
+  status           ReportStatus      @default(PENDING) // laporan harus diverifikasi dulu sebelum poin cair
+  pointTransaction PointTransaction? // relasi 1-1 ke transaksi EARN yang dihasilkan laporan ini
+  // <<< FITUR TRANSAKSI POIN
+}
+
+model WasteReportItem {
+  id String @id @default(uuid())
+  reportId    String
+  wasteTypeId String
+  weight      Decimal @db.Decimal(10,2)
+  report    WasteReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  wasteType WasteType   @relation(fields: [wasteTypeId], references: [id], onDelete: Restrict)
+  @@unique([reportId, wasteTypeId])
+}
+
+model WastePhoto {
+  id String @id @default(uuid())
+  imageUrl String
+  reportId String @unique
+  report WasteReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+}
+
+enum ReportStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+// =========================================================
+// FITUR TRANSAKSI POIN
+// =========================================================
+
+// Log semua pergerakan poin: masuk (EARN) dari setor sampah,
+// keluar (REDEEM) dari penukaran hadiah.
+model PointTransaction {
+  id          String          @id @default(uuid())
+  userId      String
+  type        TransactionType
+  points      Int             // EARN: poin bertambah, REDEEM: poin berkurang (maknanya dari `type`)
+  description String?
+  createdAt   DateTime        @default(now())
+
+  // Sumber transaksi â€” hanya salah satu yang terisi tergantung `type`
+  reportId     String? @unique
+  redemptionId String? @unique
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  report     WasteReport? @relation(fields: [reportId], references: [id], onDelete: SetNull)
+  redemption Redemption?  @relation(fields: [redemptionId], references: [id], onDelete: SetNull)
+}
+
+// Katalog hadiah yang bisa ditukar dengan poin
+model Reward {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  pointCost   Int
+  stock       Int      @default(0)
+  imageUrl    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  redemptions Redemption[]
+}
+
+// Permintaan penukaran poin -> hadiah
+model Redemption {
+  id          String           @id @default(uuid())
+  userId      String
+  rewardId    String
+  pointsUsed  Int
+  status      RedemptionStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  processedAt DateTime?
+
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reward           Reward            @relation(fields: [rewardId], references: [id], onDelete: Restrict)
+  pointTransaction PointTransaction?
+}
+
+enum TransactionType {
+  EARN
+  REDEEM
+}
+
+enum RedemptionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
 }
