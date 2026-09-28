@@ -1,11 +1,10 @@
 import { randomUUID } from "crypto";
-import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { supabaseAdmin } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 export async function GET() {
   const reports = await prisma.wasteReport.findMany({
@@ -40,6 +39,8 @@ export async function POST(request: Request) {
       const extension = path.extname(file.name) || ".jpg";
       const filename = `${randomUUID()}${extension}`;
 
+      const supabaseAdmin = getSupabaseAdmin();
+
       const { error: uploadError } = await supabaseAdmin.storage
         .from("images")
         .upload(filename, file, { contentType: file.type });
@@ -59,10 +60,12 @@ export async function POST(request: Request) {
     }
 
     regionId = formData.get("regionId")?.toString() ?? "";
-    items = [{
-      wasteTypeId: formData.get("wasteTypeId")?.toString() ?? "",
-      weight: Number(formData.get("weight")?.toString()),
-    }];
+    items = [
+      {
+        wasteTypeId: formData.get("wasteTypeId")?.toString() ?? "",
+        weight: Number(formData.get("weight")?.toString()),
+      },
+    ];
   } else {
     const body = await request.json();
     regionId = body.regionId;
@@ -77,7 +80,10 @@ export async function POST(request: Request) {
   if (
     !regionId ||
     items.length === 0 ||
-    items.some((item) => !item.wasteTypeId || !Number.isFinite(item.weight) || item.weight <= 0)
+    items.some(
+      (item) =>
+        !item.wasteTypeId || !Number.isFinite(item.weight) || item.weight <= 0
+    )
   ) {
     return NextResponse.json({ error: "Data laporan tidak valid." }, { status: 400 });
   }
