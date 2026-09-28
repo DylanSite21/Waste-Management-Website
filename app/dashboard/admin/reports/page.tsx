@@ -107,6 +107,8 @@ export default async function AdminReportsPage() {
                             src={report.photo.imageUrl}
                             alt="Gambar laporan"
                             className="h-25 w-25 rounded-lg object-cover"
+                            width={100}
+                            height={100}
                           />
                         ) : (
                           <div className="flex h-25 w-25 items-center justify-center rounded-lg bg-zinc-200 text-xs text-zinc-500">

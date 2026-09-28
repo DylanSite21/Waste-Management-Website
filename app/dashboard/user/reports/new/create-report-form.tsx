@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import "../../../../globals.css";
 import styles from "../style.module.css";
 import Image from "next/image";
 
@@ -63,7 +64,7 @@ export default function CreateReportForm({
       <select
         value={wasteTypeId}
         onChange={(e) => setWasteTypeId(e.target.value)}
-        className="w-full rounded-lg border px-3 py-2"
+        className="w-full rounded-lg border px-3 py-2 text-black"
         required
       >
         <option value="">Pilih jenis sampah</option>
@@ -77,7 +78,7 @@ export default function CreateReportForm({
       <select
         value={regionId}
         onChange={(e) => setRegionId(e.target.value)}
-        className="w-full rounded-lg border px-3 py-2"
+        className="w-full rounded-lg border px-3 py-2 text-black"
         required
       >
         <option value="">Pilih wilayah</option>
@@ -94,7 +95,7 @@ export default function CreateReportForm({
         placeholder="Berat (kg)"
         type="number"
         step="0.01"
-        className="w-full rounded-lg border px-3 py-2"
+        className="w-full rounded-lg border px-3 py-2 text-black"
         required
       />
 
@@ -106,7 +107,7 @@ export default function CreateReportForm({
           setSelectedFile(file);
           setPreviewUrl(file ? URL.createObjectURL(file) : "");
         }}
-        className="w-full rounded-lg border px-3 py-2"
+        className="w-full rounded-lg border px-3 py-2 text-black"
       />
 
       {previewUrl ? (
@@ -114,6 +115,8 @@ export default function CreateReportForm({
           src={previewUrl}
           alt="Preview gambar"
           className="h-48 w-full rounded-lg object-cover"
+          width={192}
+          height={192}
         />
       ) : null}
 
