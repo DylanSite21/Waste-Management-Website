@@ -676,3 +676,296 @@
     font-size: 13px;
   }
 }
+
+.register-page {
+  min-height: 100vh;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(420px, 0.9fr)
+    minmax(500px, 1.1fr);
+
+  background: var(--background);
+}
+
+/* =========================
+   REGISTER BRAND
+========================= */
+
+.register-brand {
+  position: relative;
+
+  min-height: 100vh;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 15% 15%,
+      rgba(34, 197, 94, 0.16),
+      transparent 30%
+    ),
+    linear-gradient(145deg, #0b2817 0%, #0f3d20 55%, #14532d 100%);
+
+  color: white;
+}
+
+.register-brand::before {
+  content: "";
+
+  position: absolute;
+
+  width: 500px;
+  height: 500px;
+
+  right: -250px;
+  bottom: -250px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 50%;
+}
+
+.register-brand::after {
+  content: "";
+
+  position: absolute;
+
+  width: 350px;
+  height: 350px;
+
+  right: -175px;
+  bottom: -175px;
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  border-radius: 50%;
+}
+
+.register-brand-content {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+  min-height: 100vh;
+
+  padding: 48px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.register-brand-message {
+  max-width: 530px;
+
+  margin: auto 0;
+}
+
+.register-brand-message h1 {
+  margin: 22px 0 20px;
+
+  font-size: clamp(38px, 4vw, 58px);
+
+  line-height: 1.05;
+
+  letter-spacing: -2.5px;
+
+  font-weight: 700;
+}
+
+.register-brand-message h1 span {
+  color: #86efac;
+}
+
+.register-brand-message p {
+  max-width: 470px;
+
+  margin: 0;
+
+  color: #a8c3af;
+
+  font-size: 15px;
+
+  line-height: 1.8;
+}
+
+/* =========================
+   REGISTER FEATURES
+========================= */
+
+.register-features {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 13px;
+
+  margin-top: 32px;
+}
+
+.register-features div {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  color: #c4d8c9;
+
+  font-size: 12px;
+}
+
+.feature-check {
+  width: 22px;
+  height: 22px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: rgba(134, 239, 172, 0.1);
+
+  border: 1px solid rgba(134, 239, 172, 0.2);
+
+  color: #86efac;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* =========================
+   REGISTER PANEL
+========================= */
+
+.register-panel {
+  min-height: 100vh;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 50px 60px;
+
+  background: var(--background);
+}
+
+.register-container {
+  width: 100%;
+
+  max-width: 460px;
+}
+
+.register-header {
+  margin-bottom: 28px;
+}
+
+.register-header h2 {
+  margin: 0 0 10px;
+
+  color: var(--text);
+
+  font-size: 30px;
+
+  line-height: 1.2;
+
+  letter-spacing: -0.8px;
+}
+
+.register-header p {
+  max-width: 410px;
+
+  margin: 0;
+
+  color: var(--text-secondary);
+
+  font-size: 14px;
+
+  line-height: 1.7;
+}
+
+/* =========================
+   REGISTER FORM
+========================= */
+
+.register-form {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 17px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 900px) {
+  .register-page {
+    grid-template-columns: 1fr;
+  }
+
+  .register-brand {
+    display: none;
+  }
+
+  .register-panel {
+    min-height: 100vh;
+
+    padding: 32px 24px;
+  }
+
+  .mobile-brand {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 42px;
+  }
+
+  .mobile-brand strong {
+    display: block;
+
+    color: var(--text);
+
+    font-size: 14px;
+  }
+
+  .mobile-brand span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--text-muted);
+
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-panel {
+    padding: 24px 18px;
+  }
+
+  .mobile-brand {
+    margin-bottom: 34px;
+  }
+
+  .register-header h2 {
+    font-size: 26px;
+  }
+
+  .register-header p {
+    font-size: 13px;
+  }
+
+  .register-form {
+    gap: 15px;
+  }
+}
