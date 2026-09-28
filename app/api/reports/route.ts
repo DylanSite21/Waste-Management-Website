@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { supabaseAdmin } from "@/lib/supabase";
 
 export async function GET() {
   const reports = await prisma.wasteReport.findMany({
@@ -36,16 +37,25 @@ export async function POST(request: Request) {
     const file = formData.get("image");
 
     if (file && typeof file !== "string" && file instanceof File) {
-      const bytes = await file.arrayBuffer();
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-      await mkdir(uploadDir, { recursive: true });
-
       const extension = path.extname(file.name) || ".jpg";
       const filename = `${randomUUID()}${extension}`;
-      const filePath = path.join(uploadDir, filename);
 
-      await writeFile(filePath, Buffer.from(bytes));
-      image = `/uploads/${filename}`;
+      const { error: uploadError } = await supabaseAdmin.storage
+        .from("images")
+        .upload(filename, file, { contentType: file.type });
+
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        return NextResponse.json(
+          { error: "Gagal mengunggah gambar." },
+          { status: 500 }
+        );
+      }
+
+      const { data } = supabaseAdmin.storage
+        .from("images")
+        .getPublicUrl(filename);
+      image = data.publicUrl;
     }
 
     regionId = formData.get("regionId")?.toString() ?? "";
