@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { put } from "@vercel/blob";
 
 export async function GET() {
   const reports = await prisma.wasteReport.findMany({
@@ -36,27 +37,43 @@ export async function POST(request: Request) {
     const file = formData.get("image");
 
     if (file && typeof file !== "string" && file instanceof File) {
-      const extension = path.extname(file.name) || ".jpg";
+      // const extension = path.extname(file.name) || ".jpg";
+      // const filename = `${randomUUID()}${extension}`;
+
+      // const supabaseAdmin = getSupabaseAdmin();
+
+      // const { error: uploadError } = await supabaseAdmin.storage
+      //   .from("images")
+      //   .upload(filename, file, { contentType: file.type });
+
+      // if (uploadError) {
+      //   console.error("Upload error:", uploadError);
+      //   return NextResponse.json(
+      //     { error: "Gagal mengunggah gambar." },
+      //     { status: 500 }
+      //   );
+      // }
+
+      // const { data } = supabaseAdmin.storage
+      //   .from("images")
+      //   .getPublicUrl(filename);
+      // image = data.publicUrl;
+       const extension = path.extname(file.name) || ".jpg";
       const filename = `${randomUUID()}${extension}`;
 
-      const supabaseAdmin = getSupabaseAdmin();
-
-      const { error: uploadError } = await supabaseAdmin.storage
-        .from("images")
-        .upload(filename, file, { contentType: file.type });
-
-      if (uploadError) {
-        console.error("Upload error:", uploadError);
+      try {
+        const blob = await put(filename, file, {
+          access: "public",
+          contentType: file.type,
+        });
+        image = blob.url;
+      } catch (err) {
+        console.error("Upload error:", err);
         return NextResponse.json(
           { error: "Gagal mengunggah gambar." },
           { status: 500 }
         );
       }
-
-      const { data } = supabaseAdmin.storage
-        .from("images")
-        .getPublicUrl(filename);
-      image = data.publicUrl;
     }
 
     regionId = formData.get("regionId")?.toString() ?? "";
